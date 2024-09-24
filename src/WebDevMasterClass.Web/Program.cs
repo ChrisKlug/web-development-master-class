@@ -158,7 +158,8 @@ app.MapGet("/api/shopping-cart", async (HttpContext ctx, IGrainFactory grainFact
 
 app.MapControllers();
 
-app.MapForwarder("/{**catch-all}", "http://ui");
+// app.MapForwarder("/{**catch-all}", "http://ui");
+app.MapForwarder("/{**catch-all}", "http://localhost:3000");
 
 app.Run();
 
