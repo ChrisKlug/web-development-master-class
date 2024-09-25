@@ -29,3 +29,5 @@ app.MapDefaultEndpoints();
 app.UseFastEndpoints();
 
 app.Run();
+
+public partial class Program { }
