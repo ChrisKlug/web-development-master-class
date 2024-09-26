@@ -91,3 +91,5 @@ app.Map("/api/{**catch-all}", (HttpContext ctx) => {
 app.MapForwarder("/{**catch-all}", "http://ui");
 
 app.Run();
+
+public partial class Program { }
