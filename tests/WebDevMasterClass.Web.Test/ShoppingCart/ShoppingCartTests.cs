@@ -1,4 +1,5 @@
-﻿using FakeItEasy;
+﻿using Bazinga.AspNetCore.Authentication.Basic;
+using FakeItEasy;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -7,6 +8,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
@@ -179,7 +181,19 @@ public class ShoppingCartTests
             Assert.Equal(1, item["count"]);
             Assert.Equal(1.23m, item["price"]);
         }
+    }
 
+    public class Me
+    {
+        [Fact]
+        public async Task Returns_HTTP_401_if_not_authenticated()
+        {
+            var client = GetClient();
+
+            var response = await client.GetAsync("/api/me");
+
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
     }
 
     private static HttpClient GetClient(Action<IGrainFactory>? configureGrainFactory = null,
@@ -199,6 +213,14 @@ public class ShoppingCartTests
                                 var productsClientFake = A.Fake<IProductsClient>();
                                 configureProductsClient?.Invoke(productsClientFake);
                                 services.AddSingleton(productsClientFake);
+
+                                services.AddAuthentication(options => {
+                                    options.DefaultScheme = BasicAuthenticationDefaults.AuthenticationScheme;
+                                    options.DefaultChallengeScheme = BasicAuthenticationDefaults.AuthenticationScheme;
+                                })
+                                        .AddBasicAuthentication(creds => 
+                                            Task.FromResult(creds.username.Equals("test", StringComparison.InvariantCultureIgnoreCase) 
+                                            && creds.password == "test"));
                             });
                         });
         var client = app.CreateClient();
