@@ -16,14 +16,15 @@ var idSrv = builder.AddContainer("identityserver", "identity-server")
 var products = builder.AddProject<Projects.WebDevMasterClass_Services_Products>("products")
         .WithEnvironment("ConnectionStrings__Sql", builder.Configuration.GetConnectionString("Products"));
 
+var orders = builder.AddProject<Projects.WebDevMasterClass_Services_Orders>("orders")
+        .WithEnvironment("ConnectionStrings__Sql", builder.Configuration.GetConnectionString("Orders"));
+
 builder.AddProject<Projects.WebDevMasterClass_Web>("web", "aspire")
         .WithEnvironment("IdentityServer__Url", idSrv.GetEndpoint("https"))
         .WithReference(ui.GetEndpoint("http"))
         .WithReference(products)
+        .WithReference(orders)
         .WithHttpEndpoint(env: "DashboardPort")
         .WithExternalHttpEndpoints();
-
-builder.AddProject<Projects.WebDevMasterClass_Services_Orders>("orders")
-        .WithEnvironment("ConnectionStrings__Sql", builder.Configuration.GetConnectionString("Orders")); ;
 
 builder.Build().Run();

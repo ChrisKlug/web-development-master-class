@@ -13,11 +13,23 @@
     <PackageReference Include="Microsoft.Orleans.Server" Version="8.2.0" />
     <PackageReference Include="OrleansDashboard" Version="8.2.0" />
     <PackageReference Include="Yarp.ReverseProxy" Version="2.2.0" />
+    <PackageReference Include="Grpc.AspNetCore" Version="2.57.0" />
+    <PackageReference Include="Grpc.Net.Client" Version="2.66.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\WebDevMasterClass.Services.Products.Client\WebDevMasterClass.Services.Products.Client.csproj" />
     <ProjectReference Include="..\WebDevMasterClass\WebDevMasterClass.ServiceDefaults\WebDevMasterClass.ServiceDefaults.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Protos\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="..\WebDevMasterClass.Services.Orders\Protos\orders.proto" GrpcServices="Client">
+      <Link>Protos\orders.proto</Link>
+    </Protobuf>
   </ItemGroup>
 
 </Project>

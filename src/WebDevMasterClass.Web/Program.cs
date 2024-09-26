@@ -35,6 +35,11 @@ builder.Services.AddProductsClient(options =>
     options.BaseUrl = "https://products";
 });
 
+builder.Services.AddGrpcClient<WebDevMasterClass.Services.Orders.gRPC.OrdersService.OrdersServiceClient>(options =>
+{
+    options.Address = new Uri("https://orders");
+});
+
 var auth = builder.Services.AddAuthentication(options =>
                 {
                     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
