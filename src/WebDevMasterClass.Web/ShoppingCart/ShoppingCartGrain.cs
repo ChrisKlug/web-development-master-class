@@ -8,24 +8,34 @@ public interface IShoppingCartGrain : IGrainWithStringKey
 
 public class ShoppingCartGrain : Grain, IShoppingCartGrain
 {
-    private readonly List<ShoppingCartItem> items = new();
+    private readonly IPersistentState<ShoppingCartState> state;
 
-    public Task AddItem(ShoppingCartItem item)
+    public ShoppingCartGrain([PersistentState("ShoppingCartState")]IPersistentState<ShoppingCartState> state)
     {
-        var existingItem = items.FirstOrDefault(i => i.ProductId == item.ProductId);
+        this.state = state;
+    }
+
+    public async Task AddItem(ShoppingCartItem item)
+    {
+        var existingItem = state.State.Items.FirstOrDefault(i => i.ProductId == item.ProductId);
         if (existingItem is null)
         {
-            items.Add(item);
+            state.State.Items.Add(item);
         }
         else
         {
             existingItem.Count += item.Count;
         }
-        return Task.CompletedTask;
+        await state.WriteStateAsync();
     }
 
     public Task<ShoppingCartItem[]> GetItems()
-        => Task.FromResult(items.ToArray());
+        => Task.FromResult(state.State.Items.ToArray());
+
+    public class ShoppingCartState
+    {
+        public List<ShoppingCartItem> Items { get; set; } = new();
+    }
 }
 
 [GenerateSerializer]
