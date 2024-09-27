@@ -1,10 +1,23 @@
 using Microsoft.EntityFrameworkCore;
 using WebDevMasterClass.Services.Orders.Data;
+using WebDevMasterClass.Services.Orders.Observability;
 using WebDevMasterClass.Services.Orders.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+
+builder.Services.AddOpenTelemetry()
+        .WithTracing(options =>
+        {
+            options.AddSource(OrdersService.ActivitySourceName);
+        })
+        .WithMetrics(options =>
+        {
+            options.AddMeter(OrdersMetrics.MeterName);
+        });
+
+builder.Services.AddSingleton<OrdersMetrics>();
 
 builder.AddSqlServerDbContext<OrdersContext>("Sql");
 

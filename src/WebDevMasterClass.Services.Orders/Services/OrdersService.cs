@@ -1,14 +1,21 @@
 ﻿using Grpc.Core;
+using System.Diagnostics;
 using WebDevMasterClass.Services.Orders.Data;
 using WebDevMasterClass.Services.Orders.Entities;
 using WebDevMasterClass.Services.Orders.gRPC;
+using WebDevMasterClass.Services.Orders.Observability;
 
 namespace WebDevMasterClass.Services.Orders.Services;
 
-public class OrdersService(OrdersContext dbContext, ILogger<OrdersService> logger) : gRPC.OrdersService.OrdersServiceBase
+public class OrdersService(OrdersContext dbContext, OrdersMetrics ordersMetrics, ILogger<OrdersService> logger) : gRPC.OrdersService.OrdersServiceBase
 {
+    public const string ActivitySourceName = "OrdersService";
+    private static readonly ActivitySource ActivitySource = new(ActivitySourceName);
+
     public override async Task<AddOrderResponse> AddOrder(AddOrderRequest request, ServerCallContext context)
     {
+        Activity.Current?.SetTag("ServiceName", nameof(OrdersService));
+
         var deliveryAddress = DeliveryAddress.Create(request.DeliveryAddress.Name,
                                                     request.DeliveryAddress.Street1,
                                                     request.DeliveryAddress.Street2,
@@ -22,7 +29,19 @@ public class OrdersService(OrdersContext dbContext, ILogger<OrdersService> logge
                                                     request.BillingAddress.PostalCode,
                                                     request.BillingAddress.City,
                                                     request.BillingAddress.Country);
+        
         var order = Order.Create(deliveryAddress, billingAddress);
+
+        Activity.Current?.AddEvent(new ActivityEvent("Adding Order"));
+
+        using var activity = ActivitySource.StartActivity("OrderService.AddOrder");
+
+        activity?.SetTag("ServiceName", nameof(OrdersService));
+
+        activity.AddEvent(new ActivityEvent("Adding Order", tags: new ActivityTagsCollection([
+            new KeyValuePair<string, object?>("OrderId", order.OrderId),
+            new KeyValuePair<string, object?>("OrderDate", order.OrderDate)
+        ])));
 
         foreach (var item in request.Items)
         {
@@ -34,6 +53,8 @@ public class OrdersService(OrdersContext dbContext, ILogger<OrdersService> logge
         try
         {
             await dbContext.SaveChangesAsync();
+
+            ordersMetrics.AddOrder();
         }
         catch (Exception ex)
         {
