@@ -92,4 +92,54 @@ public class OrderServiceTests
                     Assert.False(reader.Read());
                 }
             });
+
+    [Fact]
+    public Task Generates_an_event()
+        => TestHelper.ExecuteTest(async client =>
+        {
+            var request = new AddOrderRequest
+            {
+                DeliveryAddress = new Address
+                {
+                    Name = "Chris Klug",
+                    Street1 = "Teststreet 1",
+                    Street2 = "",
+                    PostalCode = "12345",
+                    City = "Stockholm",
+                    Country = "Sweden"
+                },
+                BillingAddress = new Address
+                {
+                    Name = "John Doe",
+                    Street1 = "Somestreet 1",
+                    Street2 = "",
+                    PostalCode = "56789",
+                    City = "Whoville",
+                    Country = "Denmark"
+                }
+            };
+
+            var response = await client.AddOrderAsync(request);
+
+        }, validateDb: async cmd =>
+        {
+            int id;
+            string orderId;
+            cmd.CommandText = "SELECT * FROM Orders";
+            using (var reader = await cmd.ExecuteReaderAsync())
+            {
+                reader.Read();
+                id = (int)reader["Id"];
+                orderId = (string)reader["OrderId"];
+            }
+            cmd.CommandText = "SELECT * FROM Events";
+            using (var reader = await cmd.ExecuteReaderAsync())
+            {
+                Assert.True(reader.Read());
+                Assert.Equal("OrderCreated", (string)reader["EventType"]);
+                Assert.Equal("Pending", (string)reader["State"]);
+                Assert.Equal(orderId, (string)reader["Data"]);
+                Assert.False(reader.Read());
+            }
+        });
 }

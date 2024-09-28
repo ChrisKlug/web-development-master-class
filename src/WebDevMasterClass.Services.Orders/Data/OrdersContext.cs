@@ -49,5 +49,14 @@ public class OrdersContext : DbContext
             x.HasKey("Id");
         });
 
+        modelBuilder.Entity<Event>(x =>
+        {
+            x.ToTable("Events");
+
+            x.Property(x => x.Type).HasColumnName("EventType").HasConversion(x => x.ToString(), x => Enum.Parse<EventType>(x));
+            x.Property(x => x.State).HasConversion(x => x.ToString(), x => Enum.Parse<EventState>(x));
+
+            x.HasKey("Id");
+        });
     }
 }

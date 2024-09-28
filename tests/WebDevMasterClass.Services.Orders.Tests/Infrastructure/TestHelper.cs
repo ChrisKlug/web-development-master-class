@@ -34,6 +34,7 @@ public static class TestHelper
                                 services.AddDbContext<OrdersServer.Data.OrdersContext>(options =>
                                 {
                                     options.UseSqlServer(config.GetConnectionString("Sql"));
+                                    options.AddInterceptors(OrdersServer.Data.Interceptors.OrderCreatedInterceptor.Instance);
                                 }, ServiceLifetime.Singleton);
                             });
                         });

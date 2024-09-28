@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using WebDevMasterClass.Services.Orders.Data;
+using WebDevMasterClass.Services.Orders.Data.Interceptors;
 using WebDevMasterClass.Services.Orders.Observability;
 using WebDevMasterClass.Services.Orders.Services;
 
@@ -19,7 +20,10 @@ builder.Services.AddOpenTelemetry()
 
 builder.Services.AddSingleton<OrdersMetrics>();
 
-builder.AddSqlServerDbContext<OrdersContext>("Sql");
+builder.AddSqlServerDbContext<OrdersContext>("Sql", configureDbContextOptions: options =>
+{
+    options.AddInterceptors(OrderCreatedInterceptor.Instance);
+});
 
 // Add services to the container.
 builder.Services.AddGrpc();
