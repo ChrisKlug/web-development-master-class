@@ -4,13 +4,17 @@ using Microsoft.AspNetCore.Mvc;
 using WebDevMasterClass.Services.Orders.gRPC;
 using WebDevMasterClass.Services.Products.Client;
 using WebDevMasterClass.Web.Models;
+using WebDevMasterClass.Web.ShoppingCart;
 
 namespace WebDevMasterClass.Web.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class OrdersController(IProductsClient productsClient, OrdersService.OrdersServiceClient ordersService, ILogger<OrdersController> logger) : ControllerBase
+public class OrdersController(IProductsClient productsClient, 
+                              OrdersService.OrdersServiceClient ordersService,
+                              IGrainFactory grainFactory,
+                              ILogger<OrdersController> logger) : ControllerBase
 {
     [HttpPost]
     public async Task<IActionResult> AddOrder(AddOrderModel order)
@@ -66,6 +70,8 @@ public class OrdersController(IProductsClient productsClient, OrdersService.Orde
         try
         {
             response = await ordersService.AddOrderAsync(request);
+            var shoppingCart = grainFactory.GetGrain<IShoppingCartGrain>(Request.Cookies["ShoppingCartId"]);
+            await shoppingCart.Clear();
         }
         catch (Exception ex)
         {
