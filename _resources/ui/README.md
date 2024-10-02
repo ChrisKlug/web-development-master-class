@@ -1,33 +1,38 @@
-# WebDevMasterClass.UI is the UI for the application
+# create-svelte
 
-To keep the workshop a bit shorter, the UI is only added as a pre-built Docker image. However, this project includes the source code for the image that is used.
+Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
 
-## Building the image
+## Creating a project
 
-To build the image, you just have to run the following command
+If you're seeing this, you've probably already done this step. Congrats!
 
-```
-docker build -t webdevmasterclass-ui .
-```
+```bash
+# create a new project in the current directory
+npm create svelte@latest
 
-And then add it to the AppHost using the following code
-
-```csharp
-var ui = builder.AddContainer("ui", "webdevmasterclass-ui")
-                .WithHttpEndpoint(targetPort: 80, env: "PORT");
+# create a new project in my-app
+npm create svelte@latest my-app
 ```
 
-## Running as NPM App
+## Developing
 
-To run the .NET Aspire solution with the UI project instead of the image. You can use the following code
+Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
 
-```csharp
-var ui = builder.AddNpmApp("ui", "../../resources/WebDevMasterClass.UI")
-   .WithEnvironment("BROWSER", "none")
-   .WithEnvironment("WDS_SOCKET_PORT", "7278")
-   .WithHttpEndpoint(env: "PORT");
+```bash
+npm run dev
+
+# or start the server and open the app in a new browser tab
+npm run dev -- --open
 ```
 
-The `BROWSER` environment variable just makes sure that no browser is opened when running the project. Abd the `WDS_SOCKET_PORT` is the port that the Webpack Dev Server is running on. This is used to make sure that the front end can open a websocket to the application through the .NET Aspire networking.
+## Building
 
-Note: This requires the `Aspire.Hosting.NodeJs` NuGet package to be installed, as the `AddNpmApp()` method is in that package.
+To create a production version of your app:
+
+```bash
+npm run build
+```
+
+You can preview the production build with `npm run preview`.
+
+> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
