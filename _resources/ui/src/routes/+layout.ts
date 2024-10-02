@@ -3,6 +3,7 @@ export const trailingSlash = 'always';
 
 import { getMe } from '$lib/api/auth/getMe';
 import { getShoppingCart } from '$lib/api/cart/getShoppingCart';
+import type { ShoppingCartItem } from '$lib/types/ShoppingCart';
 import type { User } from '$lib/types/User';
 import type { LayoutLoad } from './$types';
 
@@ -14,7 +15,12 @@ export const load: LayoutLoad = async ({ fetch, depends }) => {
 		console.error(error);
 	}
 
-	const cart = await getShoppingCart(fetch);
+	let cart: ShoppingCartItem[] | undefined;
+	try {
+		cart = await getShoppingCart(fetch);
+	} catch (error) {
+		console.error(error);
+	}
 	depends('app:cart');
 
 	return {
@@ -22,6 +28,6 @@ export const load: LayoutLoad = async ({ fetch, depends }) => {
 			name,
 			isAuthenticated: !!name
 		} as User,
-		cart
+		cart: cart || []
 	};
 };

@@ -18,19 +18,19 @@ export const load: PageLoad = async ({ parent }) => {
 		})),
 		deliveryAddress: {
 			name: data.user.name,
-			street1: 'Test street 1',
+			street1: 'Teststreet 1',
 			street2: '',
 			postalCode: '123 45',
-			city: 'Testville',
-			country: 'Sweden'
+			city: 'Testerton',
+			country: 'Testia'
 		} as CheckoutFormAddress,
 		billingAddress: {
 			name: data.user.name,
-			street1: 'Test street 1',
+			street1: 'Teststreet 1',
 			street2: '',
 			postalCode: '123 45',
-			city: 'Testville',
-			country: 'Sweden'
+			city: 'Testerton',
+			country: 'Testia'
 		} as CheckoutFormAddress
 	};
 	const form = await superValidate(pre as CheckoutFormSchema, zod(checkoutFormSchema), {
