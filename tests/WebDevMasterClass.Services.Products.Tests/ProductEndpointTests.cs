@@ -1,12 +1,8 @@
 ﻿using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+using WebDevMasterClass.Services.Products.Data;
 using WebDevMasterClass.Services.Products.Tests.Data;
-using WebDevMasterClass.Services.Products.Tests.Infrastructure;
+using WebDevMasterClass.Testing;
 
 namespace WebDevMasterClass.Services.Products.Tests;
 
@@ -16,7 +12,7 @@ public class ProductEndpointTests
     public Task GET_returns_HTTP_200_and_the_requested_product()
     {
         var productId = 0;
-        return TestHelper.ExecuteTest(dbSetup: async cmd =>
+        return TestHelper.ForHttp<Program, ProductsContext>().ExecuteTest(dbSetup: async cmd =>
         {
             productId = await cmd.AddProduct("Product 1", "Description 1", 100m, true, "product1");
         },

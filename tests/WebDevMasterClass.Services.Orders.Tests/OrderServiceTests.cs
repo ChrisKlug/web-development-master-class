@@ -1,13 +1,25 @@
+extern alias SERVER;
+
 using WebDevMasterClass.Services.Orders.gRPC;
-using WebDevMasterClass.Services.Orders.Tests.Infrastructure;
+using WebDevMasterClass.Testing;
+using OrdersServer = SERVER::WebDevMasterClass.Services.Orders;
 
 namespace WebDevMasterClass.Services.Orders.Tests;
+
+public static class OrderServiceTestHelper
+{
+    public static TestHelper<SERVER::Program, OrdersServer.Data.OrdersContext, OrdersService.OrdersServiceClient> Create()
+        => TestHelper.ForGrpc<SERVER::Program, OrdersServer.Data.OrdersContext, OrdersService.OrdersServiceClient>(
+                    options => options.AddInterceptors(OrdersServer.Data.Interceptors.OrderCreatedInterceptor.Instance)
+                );
+}
 
 public class OrderServiceTests
 {
     [Fact]
     public Task Adds_Order_to_database()
-        => TestHelper.ExecuteTest(async client =>
+        => OrderServiceTestHelper.Create().ExecuteTest(
+            async client =>
             {
                 var request = new AddOrderRequest
                 {
@@ -95,51 +107,52 @@ public class OrderServiceTests
 
     [Fact]
     public Task Generates_an_event()
-        => TestHelper.ExecuteTest(async client =>
-        {
-            var request = new AddOrderRequest
+        => OrderServiceTestHelper.Create().ExecuteTest(
+            async client =>
             {
-                DeliveryAddress = new Address
+                var request = new AddOrderRequest
                 {
-                    Name = "Chris Klug",
-                    Street1 = "Teststreet 1",
-                    Street2 = "",
-                    PostalCode = "12345",
-                    City = "Stockholm",
-                    Country = "Sweden"
-                },
-                BillingAddress = new Address
+                    DeliveryAddress = new Address
+                    {
+                        Name = "Chris Klug",
+                        Street1 = "Teststreet 1",
+                        Street2 = "",
+                        PostalCode = "12345",
+                        City = "Stockholm",
+                        Country = "Sweden"
+                    },
+                    BillingAddress = new Address
+                    {
+                        Name = "John Doe",
+                        Street1 = "Somestreet 1",
+                        Street2 = "",
+                        PostalCode = "56789",
+                        City = "Whoville",
+                        Country = "Denmark"
+                    }
+                };
+
+                var response = await client.AddOrderAsync(request);
+
+            }, validateDb: async cmd =>
+            {
+                int id;
+                string orderId;
+                cmd.CommandText = "SELECT * FROM Orders";
+                using (var reader = await cmd.ExecuteReaderAsync())
                 {
-                    Name = "John Doe",
-                    Street1 = "Somestreet 1",
-                    Street2 = "",
-                    PostalCode = "56789",
-                    City = "Whoville",
-                    Country = "Denmark"
+                    reader.Read();
+                    id = (int)reader["Id"];
+                    orderId = (string)reader["OrderId"];
                 }
-            };
-
-            var response = await client.AddOrderAsync(request);
-
-        }, validateDb: async cmd =>
-        {
-            int id;
-            string orderId;
-            cmd.CommandText = "SELECT * FROM Orders";
-            using (var reader = await cmd.ExecuteReaderAsync())
-            {
-                reader.Read();
-                id = (int)reader["Id"];
-                orderId = (string)reader["OrderId"];
-            }
-            cmd.CommandText = "SELECT * FROM Events";
-            using (var reader = await cmd.ExecuteReaderAsync())
-            {
-                Assert.True(reader.Read());
-                Assert.Equal("OrderCreated", (string)reader["EventType"]);
-                Assert.Equal("Pending", (string)reader["State"]);
-                Assert.Equal(orderId, (string)reader["Data"]);
-                Assert.False(reader.Read());
-            }
-        });
+                cmd.CommandText = "SELECT * FROM Events";
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    Assert.True(reader.Read());
+                    Assert.Equal("OrderCreated", (string)reader["EventType"]);
+                    Assert.Equal("Pending", (string)reader["State"]);
+                    Assert.Equal(orderId, (string)reader["Data"]);
+                    Assert.False(reader.Read());
+                }
+            });
 }

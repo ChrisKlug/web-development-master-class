@@ -1,18 +1,8 @@
-using Azure;
-using Google.Protobuf.WellKnownTypes;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using System.Net;
 using WebDevMasterClass.Services.Products.Data;
 using WebDevMasterClass.Services.Products.Tests.Data;
-using WebDevMasterClass.Services.Products.Tests.Infrastructure;
+using WebDevMasterClass.Testing;
 
 namespace WebDevMasterClass.Services.Products.Tests;
 
@@ -20,7 +10,7 @@ public class FeaturedEndpointsTests
 {
     [Fact]
     public Task GET_returns_HTTP_200_and_all_products_marked_as_featured()
-        => TestHelper.ExecuteTest(dbSetup: async cmd => {
+        => TestHelper.ForHttp<Program, ProductsContext>().ExecuteTest(dbSetup: async cmd => {
             await cmd.AddProduct("Product 1", "Description 1", 100m, true, "product1");
             await cmd.AddProduct("Product 2", "Description 2", 200m, true, "product2");
             await cmd.AddProduct("Product 3", "Description 3", 300m, true, "product3");

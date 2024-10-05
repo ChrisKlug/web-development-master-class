@@ -21,7 +21,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebDevMasterClass.Web.Test"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebDevMasterClass.Services.Orders", "src\WebDevMasterClass.Services.Orders\WebDevMasterClass.Services.Orders.csproj", "{C262C709-AF6B-4132-82CA-ADF08E20EC69}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebDevMasterClass.Services.Orders.Tests", "tests\WebDevMasterClass.Services.Orders.Tests\WebDevMasterClass.Services.Orders.Tests.csproj", "{DBCF929A-9A22-48FB-B773-E2E802E76219}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebDevMasterClass.Services.Orders.Tests", "tests\WebDevMasterClass.Services.Orders.Tests\WebDevMasterClass.Services.Orders.Tests.csproj", "{DBCF929A-9A22-48FB-B773-E2E802E76219}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebDevMasterClass.Testing", "tests\WebDevMasterClass.Testing\WebDevMasterClass.Testing.csproj", "{5CBC9F07-D35A-4762-AE69-BA494C758D9B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,6 +67,10 @@ Global
 		{DBCF929A-9A22-48FB-B773-E2E802E76219}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DBCF929A-9A22-48FB-B773-E2E802E76219}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DBCF929A-9A22-48FB-B773-E2E802E76219}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5CBC9F07-D35A-4762-AE69-BA494C758D9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CBC9F07-D35A-4762-AE69-BA494C758D9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CBC9F07-D35A-4762-AE69-BA494C758D9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CBC9F07-D35A-4762-AE69-BA494C758D9B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

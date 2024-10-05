@@ -23,6 +23,7 @@
     <ProjectReference Include="..\..\src\WebDevMasterClass.Services.Orders\WebDevMasterClass.Services.Orders.csproj">
       <Aliases>SERVER</Aliases>
     </ProjectReference>
+    <ProjectReference Include="..\WebDevMasterClass.Testing\WebDevMasterClass.Testing.csproj" />
   </ItemGroup>
 
   <ItemGroup>
