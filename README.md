@@ -6,7 +6,10 @@ This repo contains the code used in my Web Development Master Class.
 
 To get started, you will need Visual Studio or VS Code, set up with the .NET Aspire workload. You will also need Docker Desktop installed, as it uses containers for a couple of the projects.
 
-Before you can run the project, you need to do 2 things. Firs of all, you need to build a Docker image for the Identity Server project. This is quite eaisly done by running the following command in the terminal:
+Before you can run the project, you need to do 3 things. 
+
+### Identity Server
+First of all, you need to build a Docker image for the Identity Server project. This is quite easily done by running the following command in the terminal:
 
 ```bash
 cd _resources/identity-server
@@ -15,6 +18,7 @@ docker build -t identity-server .
 
 This creates a new `identity-server` Docker image that is used in the solution.
 
+### SSL Cert
 Next, you need to configure an SSL certificate for the Identity Server project. To do this, you need a certificate that you trust. The easiest is to simply use the one that ASP.NET Core sets up for you.
 
 To get hold of the ASP.NET Core certificate you need to do the following steps:
@@ -34,6 +38,12 @@ To get hold of the ASP.NET Core certificate you need to do the following steps:
 By doing this, the certificate will automatically be added to the Identity Server container and used by Kestrel.
 
 __Note:__ The code for this is in [the AppHost's Program.cs file](/src/WebDevMasterClass/WebDevMasterClass.AppHost/Program.cs)
+
+### SQL DB
+Finally, ensure you're able to connect to a local instance of a sql database with MyVerySecretPassw0rd. If you don't already have one setup this way, it's easy to do via docker:
+```
+docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=MyVerySecretPassw0rd" -p 1433:1433 --name Sql --hostname Sql -d mcr.microsoft.com/mssql/server:2022-latest
+```
 
 Once these steps have been completed, you should be able to simply press F5 to run the solution. As long as the __WebDevMasterClass.AppHost__ project is set as start-up project.
 
